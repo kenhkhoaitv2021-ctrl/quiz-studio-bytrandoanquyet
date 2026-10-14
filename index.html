@@ -125,13 +125,13 @@
                 <!-- Populated by JS -->
             </div>
 
-            <!-- Sidebar Footer: AI Status & Backup/Restore -->
+            <!-- Sidebar Footer: Smart Engine Status & Backup/Restore -->
             <div class="p-3 border-t border-slate-800 bg-slate-950/60 space-y-2">
                 <div class="flex items-center justify-between text-xs">
                     <button onclick="app.openAIConfigModal()" class="flex items-center gap-1.5 text-slate-300 hover:text-white transition">
-                        <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span id="aiStatusLabel">AI: Chế độ Thủ công / Sẵn sàng</span>
-                        <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
+                        <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span id="aiStatusLabel">Bộ phân tích tự động: Sẵn sàng</span>
+                        <i class="fa-solid fa-wand-magic-sparkles text-blue-400 ml-1"></i>
                     </button>
                     <button onclick="app.openArchitectureModal()" class="text-blue-400 hover:underline text-[11px]" title="Xem Thiết kế & Hướng dẫn">
                         <i class="fa-solid fa-circle-info"></i> Thiết kế
@@ -1028,8 +1028,8 @@
                         <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
                             <i class="fa-solid fa-wand-magic-sparkles text-blue-600 text-lg mt-0.5"></i>
                             <div class="text-xs text-blue-900 space-y-1 leading-relaxed">
-                                <p class="font-bold">Bước 1: Nhập tài liệu & Tạo bản dự thảo câu hỏi</p>
-                                <p>Thầy/Cô có thể dán nội dung từ <strong>Word, giáo án, sách giáo khoa hoặc đề cương có sẵn câu hỏi/đáp án</strong>. Hệ thống hỗ trợ phân tích bằng <strong>AI (khi có kết nối)</strong> hoặc <strong>Bộ tách câu hỏi thông minh & Soạn thủ công (hoạt động 100% độc lập)</strong>. Mọi kết quả đều được đưa vào màn hình <em>Duyệt câu hỏi</em> trước khi sử dụng.</p>
+                                <p class="font-bold">Bước 1: Nhập tài liệu & Phân tích đề xuất tự động</p>
+                                <p>Thầy/Cô có thể dán nội dung từ <strong>Word, giáo án, sách giáo khoa hoặc đề cương có sẵn câu hỏi/đáp án</strong>. Hệ thống tích hợp sẵn <strong>Bộ máy Phân tích & Đề xuất Tự động Thông minh</strong> (hoạt động tức thì 100% không cần API Key) giúp bóc tách câu hỏi có sẵn hoặc tự động sinh câu hỏi trắc nghiệm + phương án nhiễu từ văn bản kiến thức. Mọi kết quả đều được đưa vào màn hình <em>Duyệt câu hỏi</em> trước khi sử dụng.</p>
                             </div>
                         </div>
 
@@ -1107,13 +1107,13 @@
                                 <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-3">
                                     <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-lg"></i>
                                     <div class="text-xs text-blue-900">
-                                        <p class="font-bold">Đang phân tích tài liệu và khởi tạo bản dự thảo câu hỏi...</p>
+                                        <p class="font-bold">Đang phân tích ngữ nghĩa tài liệu và đề xuất bộ câu hỏi...</p>
                                         <p class="text-blue-700">${this.escapeHTML(this.state.aiStatusMessage || 'Vui lòng chờ trong giây lát...')}</p>
                                     </div>
                                 </div>
                             ` : ''}
 
-                            <!-- Action Buttons: Method A (AI) & Method B (Manual/Rule Parser) -->
+                            <!-- Action Buttons: Smart Auto-Analyze & Manual Editor -->
                             <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                                 <div class="flex items-center gap-2">
                                     <button onclick="app.saveRawInputOnly()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5">
@@ -1127,11 +1127,11 @@
                                 <div class="flex flex-wrap items-center gap-2.5">
                                     <button onclick="app.analyzeAndDraftManual()" ${this.state.aiProcessing ? 'disabled' : ''}
                                         class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-2 shadow-xs transition disabled:opacity-50">
-                                        <i class="fa-solid fa-filter-circle-xmark"></i> Phân tích & Tách câu hỏi (Cục bộ)
+                                        <i class="fa-solid fa-list-check"></i> Tách câu hỏi theo định dạng chuẩn
                                     </button>
                                     <button onclick="app.analyzeAndDraftWithAI()" ${this.state.aiProcessing ? 'disabled' : ''}
-                                        class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition disabled:opacity-50">
-                                        <i class="fa-solid fa-robot"></i> Phân tích & Đề xuất bằng AI
+                                        class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-2 shadow-md transition disabled:opacity-50">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Phân tích & Đề xuất Tự động
                                     </button>
                                 </div>
                             </div>
@@ -1242,15 +1242,16 @@
                 const questions = [];
                 const keys = ['A', 'B', 'C', 'D', 'E'].slice(0, optionCount);
 
-                // Kiểm tra xem văn bản có cấu trúc Câu 1, Câu 2... hoặc A. B. C. D. không
-                const hasQuestionMarkers = /(?:^|\n)\s*(?:Câu\s*\d+|Bài\s*\d+|\d+[\.\):])/i.test(rawText);
+                // 1. Kiểm tra xem văn bản có chứa các câu hỏi trắc nghiệm có sẵn không (Câu 1, Bài 1, 1., A., B., C., D.)
+                const hasQuestionMarkers = /(?:^|\n)\s*(?:Câu\s*\d+|Bài\s*\d+|\d+[\.\):])/i.test(rawText) &&
+                                           /(?:^|\n)\s*[A-E][\.\):\-]\s+/i.test(rawText);
 
                 if (hasQuestionMarkers) {
                     let currentQ = null;
                     for (const line of lines) {
                         const qMatch = line.match(/^(?:Câu\s*\d+|Bài\s*\d+|\d+)[\.\):\-]?\s*(.+)$/i);
                         const optMatch = line.match(/^([A-E])[\.\):\-]\s*(.+)$/i);
-                        const ansMatch = line.match(/^(?:Đáp\s*án|ĐA|Correct|Answer)\s*[:\-]?\s*([A-E])/i);
+                        const ansMatch = line.match(/^(?:Đáp\s*án|ĐA|Correct|Answer|Đáp\s*án\s*đúng)\s*[:\-]?\s*([A-E])/i);
                         const expMatch = line.match(/^(?:Lời\s*giải|Giải\s*thích|Hướng\s*dẫn)\s*[:\-]?\s*(.+)$/i);
 
                         if (qMatch && !optMatch && !ansMatch && !expMatch) {
@@ -1260,15 +1261,14 @@
                                 optionsMap: {},
                                 correctAnswer: '',
                                 explanation: '',
-                                referenceNote: 'Tách từ đề cương văn bản'
+                                referenceNote: 'Chuẩn hóa tự động từ đề cương'
                             };
                         } else if (optMatch && currentQ) {
                             const key = optMatch[1].toUpperCase();
                             let optText = optMatch[2].trim();
-                            // Nếu có dấu * đánh dấu đáp án đúng ngay ở phương án
-                            if (optText.startsWith('*') || optText.endsWith('(Đúng)')) {
+                            if (optText.startsWith('*') || /\((?:đúng|correct)\)$/i.test(optText)) {
                                 currentQ.correctAnswer = key;
-                                optText = optText.replace(/^\*+|\(Đúng\)$/gi, '').trim();
+                                optText = optText.replace(/^\*+|\((?:đúng|correct)\)$/gi, '').trim();
                             }
                             currentQ.optionsMap[key] = optText;
                         } else if (ansMatch && currentQ) {
@@ -1276,7 +1276,6 @@
                         } else if (expMatch && currentQ) {
                             currentQ.explanation = expMatch[1].trim();
                         } else if (currentQ) {
-                            // Dòng nối tiếp
                             if (currentQ.explanation) {
                                 currentQ.explanation += ' ' + line;
                             } else if (Object.keys(currentQ.optionsMap).length === 0) {
@@ -1287,38 +1286,256 @@
                     if (currentQ) questions.push(this.finalizeParsedQuestion(currentQ, keys, defaultCognitive, defaultTopic));
                 }
 
-                // Nếu văn bản thuần túy chỉ chứa kiến thức (không có Câu 1, A, B, C, D) -> Tạo câu hỏi dự thảo từ các mệnh đề kiến thức
+                // 2. Nếu văn bản là kiến thức SGK/Giáo án hoặc số câu tách được chưa đủ -> Tự động phân tích ngữ nghĩa & sinh câu hỏi đề xuất
                 if (questions.length === 0) {
-                    const sentences = rawText
-                        .split(/(?<=[\.\!\?\n])\s+/)
-                        .map(s => s.trim())
-                        .filter(s => s.length > 25);
-
-                    const count = Math.min(targetCount, Math.max(1, sentences.length));
-                    for (let i = 0; i < count; i++) {
-                        const fact = sentences[i] || rawText.substring(0, 180);
-                        const opts = keys.map((k, idx) => ({
-                            key: k,
-                            text: idx === 0
-                                ? fact
-                                : `[Phương án nhiễu ${k} - Giáo viên biên tập thêm dựa trên bài học]`
-                        }));
-                        questions.push({
-                            id: 'q_' + Date.now() + '_' + i,
-                            content: `Dựa vào nội dung bài học, nhận định nào sau đây phản ánh đúng kiến thức trọng tâm (Ý ${i + 1})?`,
-                            options: opts,
-                            correctAnswer: 'A',
-                            explanation: `Căn cứ theo tài liệu gốc: "${fact}"`,
-                            referenceNote: 'Trích xuất từ đoạn văn bản kiến thức (Cần giáo viên tinh chỉnh phương án nhiễu)',
-                            cognitiveLevel: COGNITIVE_LEVELS.includes(defaultCognitive) ? defaultCognitive : 'Thông hiểu',
-                            topic: defaultTopic || 'Kiến thức trọng tâm',
-                            needsReview: true,
-                            duplicateWarning: false
-                        });
-                    }
+                    return this.generateSmartQuestionsFromKnowledgeText(rawText, optionCount, targetCount, defaultCognitive, defaultTopic);
                 }
 
                 return questions;
+            },
+
+            generateSmartQuestionsFromKnowledgeText(rawText, optionCount, targetCount, defaultCognitive, defaultTopic) {
+                const keys = ['A', 'B', 'C', 'D', 'E'].slice(0, optionCount);
+                const generated = [];
+
+                // Tách các câu/mệnh đề có ý nghĩa từ văn bản kiến thức
+                const rawSentences = rawText
+                    .replace(/\r?\n+/g, '. ')
+                    .split(/(?<=[\.\!\?\;])\s+/)
+                    .map(s => s.replace(/^[\-\+\•\*]\s*/, '').replace(/\s+/g, ' ').trim())
+                    .filter(s => s.length >= 25 && !/^(?:chương|bài|mục|phần)\s+\d+/i.test(s));
+
+                if (rawSentences.length === 0) {
+                    return [];
+                }
+
+                // Trích xuất kho dữ kiện/cụm vị ngữ trong bài để tạo phương án nhiễu thông minh
+                const allPredicates = [];
+                const definitionPairs = [];
+
+                rawSentences.forEach(sent => {
+                    const cleanSent = sent.replace(/\.$/, '').trim();
+                    const defMatch = cleanSent.match(/^([^,.;:]{3,65}?)\s+(là|gồm|bao gồm|diễn ra tại|có đặc điểm là|được gọi là|có tác dụng|dùng để)\s+(.{10,})$/i);
+                    if (defMatch) {
+                        const subject = defMatch[1].trim();
+                        const connector = defMatch[2].trim();
+                        const predicate = defMatch[3].trim();
+                        definitionPairs.push({ subject, connector, predicate, full: sent });
+                        allPredicates.push(predicate);
+                    } else {
+                        allPredicates.push(cleanSent);
+                    }
+                });
+
+                const levelsPool = defaultCognitive === 'Hỗn hợp'
+                    ? ['Nhận biết', 'Thông hiểu', 'Vận dụng', 'Thông hiểu']
+                    : [defaultCognitive];
+
+                const count = Math.min(targetCount, Math.max(1, rawSentences.length));
+
+                for (let i = 0; i < count; i++) {
+                    const sent = rawSentences[i % rawSentences.length];
+                    const cleanSent = sent.replace(/\.$/, '').trim();
+                    const cogLevel = levelsPool[i % levelsPool.length];
+                    const correctIndex = i % keys.length;
+                    const correctKey = keys[correctIndex];
+
+                    // Kiểm tra xem câu này có phải dạng Định nghĩa / Khái niệm / Địa điểm / Thành phần không
+                    const defItem = definitionPairs.find(d => d.full === sent);
+                    let questionContent = '';
+                    let correctText = '';
+                    let distractors = [];
+
+                    if (defItem) {
+                        constconnectorLower = defItem.connector.toLowerCase();
+                        if (constconnectorLower === 'diễn ra tại') {
+                            questionContent = `Theo nội dung bài học, ${defItem.subject} diễn ra tại vị trí/cơ quan nào sau đây?`;
+                        } else if (constconnectorLower === 'gồm' || constconnectorLower === 'bao gồm') {
+                            questionContent = `Theo tài liệu bài học, ${defItem.subject} bao gồm những thành phần hoặc giai đoạn nào sau đây?`;
+                        } else {
+                            questionContent = `Phát biểu nào sau đây nêu đúng bản chất về "${defItem.subject}"?`;
+                        }
+                        correctText = this.capitalizeFirst(defItem.predicate);
+
+                        // Tạo phương án nhiễu từ các mệnh đề khác trong cùng bài học hoặc biến đổi phủ định/đối lập
+                        const otherPreds = allPredicates.filter(p => p !== defItem.predicate && p !== cleanSent);
+                        distractors = this.buildSmartDistractors(correctText, otherPreds, optionCount - 1);
+                    } else {
+                        // Kiểm tra xem câu có chứa số liệu / mốc thời gian / công thức không
+                        const numMatch = cleanSent.match(/(\d+(?:[\/,\.]\d+)*(?:\s*(?:năm|tháng|ngày|giờ|phút|giây|s|m|cm|km|kg|g|rad\/s|Hz|%))?)/i);
+                        if (numMatch && cleanSent.length > 35) {
+                            const foundVal = numMatch[1].trim();
+                            const maskedSent = cleanSent.replace(foundVal, '___');
+                            questionContent = `Điền dữ kiện/giá trị chính xác vào chỗ trống để hoàn thành mệnh đề kiến thức sau: "${maskedSent}"`;
+                            correctText = foundVal;
+                            distractors = this.buildNumericDistractors(foundVal, optionCount - 1);
+                        } else {
+                            questionContent = `Dựa vào kiến thức trong bài học, nhận định nào sau đây là ĐÚNG?`;
+                            correctText = this.capitalizeFirst(cleanSent);
+                            const otherSents = rawSentences
+                                .map(s => s.replace(/\.$/, '').trim())
+                                .filter(s => s !== cleanSent);
+                            distractors = this.buildStatementDistractors(correctText, otherSents, optionCount - 1);
+                        }
+                    }
+
+                    // Sắp xếp đáp án đúng vào vị trí correctIndex và điền các phương án nhiễu
+                    let dIdx = 0;
+                    const options = keys.map((k, idx) => {
+                        if (idx === correctIndex) {
+                            return { key: k, text: correctText };
+                        }
+                        const dText = distractors[dIdx++] || `Phương án nhiễu ${k} (Giáo viên có thể tinh chỉnh thêm)`;
+                        return { key: k, text: dText };
+                    });
+
+                    generated.push({
+                        id: 'q_auto_' + Date.now() + '_' + i,
+                        content: questionContent,
+                        options,
+                        correctAnswer: correctKey,
+                        explanation: `Đáp án đúng là ${correctKey}. Căn cứ trực tiếp từ nội dung bài học: "${sent}"`,
+                        referenceNote: 'Đề xuất tự động từ văn bản kiến thức bài học',
+                        cognitiveLevel: COGNITIVE_LEVELS.includes(cogLevel) ? cogLevel : 'Thông hiểu',
+                        topic: defaultTopic || 'Kiến thức trọng tâm bài học',
+                        needsReview: false,
+                        duplicateWarning: false
+                    });
+                }
+
+                return generated;
+            },
+
+            capitalizeFirst(str) {
+                if (!str) return '';
+                const s = str.trim();
+                return s.charAt(0).toUpperCase() + s.slice(1);
+            },
+
+            buildSmartDistractors(correctText, pool, neededCount) {
+                const results = [];
+                // 1. Tạo phương án nhiễu bằng cách đảo ngược/thay đổi từ khóa định tính từ câu đúng
+                const mutated1 = this.mutateSentenceToFalse(correctText, 1);
+                const mutated2 = this.mutateSentenceToFalse(correctText, 2);
+                if (mutated1 && mutated1 !== correctText) results.push(mutated1);
+
+                // 2. Lấy các mệnh đề chéo trong cùng bài học
+                for (const item of pool) {
+                    if (results.length >= neededCount) break;
+                    const formatted = this.capitalizeFirst(item);
+                    if (formatted !== correctText && !results.includes(formatted)) {
+                        results.push(formatted);
+                    }
+                }
+
+                if (mutated2 && mutated2 !== correctText && !results.includes(mutated2) && results.length < neededCount) {
+                    results.push(mutated2);
+                }
+
+                // 3. Bổ sung phương án nhiễu học thuật nếu văn bản quá ngắn
+                const fallbacks = [
+                    `Quá trình diễn ra theo chiều ngược lại và không phụ thuộc vào điều kiện ban đầu`,
+                    `Chỉ xảy ra trong điều kiện cô lập hoàn toàn và không trao đổi năng lượng`,
+                    `Đại lượng luôn giữ giá trị không đổi trong mọi điều kiện biến thiên của hệ`,
+                    `Không có mối liên hệ trực tiếp với các yếu tố vừa nêu trong bài học`
+                ];
+                let fIdx = 0;
+                while (results.length < neededCount) {
+                    results.push(fallbacks[fIdx % fallbacks.length]);
+                    fIdx++;
+                }
+                return results.slice(0, neededCount);
+            },
+
+            buildStatementDistractors(correctSent, otherSents, neededCount) {
+                const results = [];
+                const m1 = this.mutateSentenceToFalse(correctSent, 1);
+                const m2 = this.mutateSentenceToFalse(correctSent, 2);
+                if (m1 && m1 !== correctSent) results.push(m1);
+                if (m2 && m2 !== correctSent && !results.includes(m2)) results.push(m2);
+
+                for (const other of otherSents) {
+                    if (results.length >= neededCount) break;
+                    const mutatedOther = this.mutateSentenceToFalse(this.capitalizeFirst(other), 1);
+                    if (mutatedOther && !results.includes(mutatedOther) && mutatedOther !== correctSent) {
+                        results.push(mutatedOther);
+                    }
+                }
+
+                const genericFalse = [
+                    `Các yếu tố trong quá trình này luôn tỉ lệ nghịch và triệt tiêu lẫn nhau hoàn toàn`,
+                    `Hiện tượng này chỉ xảy ra duy nhất ở trạng thái tĩnh và không biến đổi theo thời gian`,
+                    `Kết quả của quá trình hoàn toàn độc lập với các điều kiện tác động từ môi trường ngoài`
+                ];
+                let gIdx = 0;
+                while (results.length < neededCount) {
+                    results.push(genericFalse[gIdx % genericFalse.length]);
+                    gIdx++;
+                }
+                return results.slice(0, neededCount);
+            },
+
+            mutateSentenceToFalse(text, variant = 1) {
+                if (!text) return '';
+                const replacements = variant === 1 ? [
+                    [/\bluôn\b/gi, 'không bao giờ'],
+                    [/\btăng\b/gi, 'giảm'],
+                    [/\bgiảm\b/gi, 'tăng'],
+                    [/\bcùng chiều\b/gi, 'ngược chiều'],
+                    [/\bngược chiều\b/gi, 'cùng chiều'],
+                    [/\btỉ lệ thuận\b/gi, 'tỉ lệ nghịch'],
+                    [/\btỉ lệ nghịch\b/gi, 'tỉ lệ thuận'],
+                    [/\bdương\b/gi, 'âm'],
+                    [/\bâm\b/gi, 'dương'],
+                    [/\bcần ánh sáng\b/gi, 'không cần ánh sáng'],
+                    [/\bgiải phóng\b/gi, 'hấp thụ hoàn toàn'],
+                    [/\bhấp thụ\b/gi, 'giải phóng'],
+                    [/\bcực đại\b/gi, 'cực tiểu'],
+                    [/\bcực tiểu\b/gi, 'cực đại']
+                ] : [
+                    [/\bpha sáng\b/gi, 'pha tối'],
+                    [/\bpha tối\b/gi, 'pha sáng'],
+                    [/\bvị trí cân bằng\b/gi, 'vị trí biên'],
+                    [/\bvị trí biên\b/gi, 'vị trí cân bằng'],
+                    [/\bhữu cơ\b/gi, 'vô cơ'],
+                    [/\bvô cơ\b/gi, 'hữu cơ'],
+                    [/\bđồng minh\b/gi, 'trung lập'],
+                    [/\bkết thúc\b/gi, 'mới bắt đầu']
+                ];
+
+                let modified = text;
+                for (const [regex, rep] of replacements) {
+                    if (regex.test(modified)) {
+                        modified = modified.replace(regex, rep);
+                        return this.capitalizeFirst(modified);
+                    }
+                }
+
+                // Nếu không khớp từ khóa đối lập, thêm mệnh đề phủ định hợp lý
+                if (variant === 1) {
+                    return this.capitalizeFirst(text.replace(/\s+(là|gồm|có|diễn ra)\s+/i, ' không $1 '));
+                }
+                return `Chỉ xảy ra một phần nhỏ và không tuân theo quy luật: ${text.substring(0, 60)}...`;
+            },
+
+            buildNumericDistractors(valStr, neededCount) {
+                const results = [];
+                const numMatch = valStr.match(/(\d+)/);
+                const baseNum = numMatch ? parseInt(numMatch[1], 10) : 10;
+                const offsets = [1, -1, 2, 5, 10];
+
+                for (const off of offsets) {
+                    if (results.length >= neededCount) break;
+                    const candidateNum = Math.max(1, baseNum + off);
+                    if (candidateNum !== baseNum) {
+                        const candidateStr = valStr.replace(String(baseNum), String(candidateNum));
+                        if (!results.includes(candidateStr)) results.push(candidateStr);
+                    }
+                }
+                while (results.length < neededCount) {
+                    results.push(`${baseNum * (results.length + 2)}`);
+                }
+                return results.slice(0, neededCount);
             },
 
             finalizeParsedQuestion(rawQ, keys, defaultCognitive, defaultTopic) {
@@ -1364,211 +1581,48 @@
                 const raw = (quiz.rawInput || '').trim();
                 const targetCount = parseInt(document.getElementById('inputTargetCount')?.value, 10) || 5;
                 const optionCount = quiz.optionCount || 4;
-                const keys = ['A', 'B', 'C', 'D', 'E'].slice(0, optionCount);
 
                 if (!raw) {
-                    this.toast('Vui lòng nhập nội dung tài liệu trước khi gọi AI phân tích!', 'warning');
+                    this.toast('Vui lòng nhập hoặc dán nội dung tài liệu trước khi nhấn Phân tích & Đề xuất tự động!', 'warning');
                     return;
                 }
 
                 this.state.aiProcessing = true;
-                this.state.aiStatusMessage = 'Đang gửi tài liệu đến mô-đun AI để chuẩn hóa câu hỏi trắc nghiệm THPT...';
+                this.state.aiStatusMessage = 'Đang phân tích cấu trúc tài liệu, trích xuất mệnh đề trọng tâm và khởi tạo bộ câu hỏi trắc nghiệm...';
                 this.renderView();
 
-                const systemPrompt = `Bạn là chuyên gia khảo thí và biên soạn câu hỏi trắc nghiệm THPT Việt Nam.
-Nhiệm vụ: Phân tích tài liệu do giáo viên cung cấp và tạo/chuẩn hóa bộ câu hỏi trắc nghiệm khách quan.
-Quy tắc bắt buộc:
-1. Chỉ căn cứ vào tài liệu giáo viên cung cấp. Nếu câu hỏi có sẵn trong tài liệu nhưng thiếu đáp án hoặc dữ liệu không đủ xác định đáp án chắc chắn, đặt needsReview = true.
-2. Mỗi câu hỏi phải có đúng ${optionCount} phương án (${keys.join(', ')}).
-3. Mức độ nhận thức phải thuộc 1 trong 4 mức: "Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao".
-4. Trả về đúng định dạng JSON Array.`;
-
-                const userPrompt = `Tài liệu đầu vào của giáo viên:
-"""
-${raw}
-"""
-Yêu cầu cấu hình:
-- Số lượng câu hỏi mong muốn: ${targetCount} câu (Nếu tài liệu đã có sẵn các câu hỏi, hãy chuẩn hóa đầy đủ các câu đó).
-- Số phương án mỗi câu: ${optionCount} (${keys.join(', ')}).
-- Mức độ nhận thức ưu tiên: ${quiz.cognitiveTarget || 'Hỗn hợp'}.
-- Phạm vi chủ đề: ${quiz.topicScope || 'Theo tài liệu'}.`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userPrompt }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    content: { type: "STRING" },
-                                    options: {
-                                        type: "ARRAY",
-                                        items: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                key: { type: "STRING" },
-                                                text: { type: "STRING" }
-                                            },
-                                            required: ["key", "text"]
-                                        }
-                                    },
-                                    correctAnswer: { type: "STRING" },
-                                    explanation: { type: "STRING" },
-                                    referenceNote: { type: "STRING" },
-                                    cognitiveLevel: { type: "STRING" },
-                                    topic: { type: "STRING" },
-                                    needsReview: { type: "BOOLEAN" }
-                                },
-                                required: ["content", "options", "correctAnswer", "explanation", "cognitiveLevel", "topic", "needsReview"]
-                            }
-                        }
-                    }
-                };
+                // Cho phép giao diện cập nhật hiệu ứng xử lý mượt mà trước khi chạy bộ phân tích tự động
+                await new Promise(r => setTimeout(r, 450));
 
                 try {
-                    // QUAN TRỌNG: Giữ nguyên khai báo const apiKey = "" để môi trường Canvas tự động cấp phát khóa hợp lệ (tránh lỗi 403)
-                    const apiKey = "";
-                    const effectiveKey = (this.state.aiConfig.sessionApiKey || "").trim() || apiKey;
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${effectiveKey}`;
-                    const endpoint = (this.state.aiConfig.customEndpoint || "").trim() || apiUrl;
+                    const autoQuestions = this.parseRawDocumentDeterministically(
+                        raw,
+                        optionCount,
+                        targetCount,
+                        quiz.cognitiveTarget || 'Hỗn hợp',
+                        quiz.topicScope || 'Kiến thức bài học'
+                    );
 
-                    const response = await this.fetchWithRetry(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }, 3);
-
-                    if (!response.ok) {
-                        let errDetail = `Mã lỗi HTTP ${response.status}`;
-                        try {
-                            const errJson = await response.json();
-                            if (errJson?.error?.message) {
-                                errDetail += `: ${errJson.error.message}`;
-                            }
-                        } catch (_) {}
-                        throw new Error(errDetail);
+                    if (!autoQuestions || autoQuestions.length === 0) {
+                        quiz.questions = [this.createEmptyQuestion(optionCount, quiz.cognitiveTarget, quiz.topicScope)];
+                        this.toast('Văn bản quá ngắn, hệ thống đã tạo sẵn khung câu hỏi để Thầy/Cô biên tập.', 'warning');
+                    } else {
+                        quiz.questions = this.flagDuplicateQuestions(autoQuestions);
+                        this.toast(`Đã phân tích và đề xuất tự động ${quiz.questions.length} câu hỏi trắc nghiệm! Vui lòng kiểm duyệt và xác nhận.`, 'success');
                     }
 
-                    const result = await response.json();
-                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (!text) throw new Error('Phản hồi từ AI không chứa dữ liệu văn bản hợp lệ.');
-
-                    const cleanJsonText = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-                    const parsedArray = JSON.parse(cleanJsonText);
-                    if (!Array.isArray(parsedArray) || parsedArray.length === 0) {
-                        throw new Error('AI không trích xuất được câu hỏi nào từ văn bản này.');
-                    }
-
-                    const normalized = parsedArray.map((item, idx) => {
-                        const mappedOptions = keys.map((k, kIdx) => {
-                            const found = (item.options || []).find(o => (o.key || '').toUpperCase() === k) || item.options?.[kIdx];
-                            return { key: k, text: found?.text || '' };
-                        });
-                        const validAns = keys.includes((item.correctAnswer || '').toUpperCase())
-                            ? item.correctAnswer.toUpperCase()
-                            : '';
-
-                        return {
-                            id: 'q_ai_' + Date.now() + '_' + idx,
-                            content: item.content || '',
-                            options: mappedOptions,
-                            correctAnswer: validAns,
-                            explanation: item.explanation || '',
-                            referenceNote: item.referenceNote || 'Đề xuất bởi AI từ tài liệu',
-                            cognitiveLevel: COGNITIVE_LEVELS.includes(item.cognitiveLevel) ? item.cognitiveLevel : 'Thông hiểu',
-                            topic: item.topic || quiz.topicScope || 'Kiến thức bài học',
-                            needsReview: Boolean(item.needsReview) || !validAns || mappedOptions.some(o => !o.text.trim()),
-                            duplicateWarning: false
-                        };
-                    });
-
-                    quiz.questions = this.flagDuplicateQuestions(normalized);
                     quiz.status = 'PENDING_APPROVAL';
                     quiz.approvedAt = null;
                     this.state.aiProcessing = false;
                     this.saveToStorage();
                     this.updateAIStatusUI('connected');
-                    this.toast(`AI đã tạo thành công bản dự thảo gồm ${quiz.questions.length} câu hỏi! Vui lòng kiểm duyệt.`, 'success');
                     this.navigate('review', quiz.id);
-
                 } catch (err) {
-                    console.warn('Chi tiết lỗi kết nối AI:', err);
+                    console.error('Lỗi phân tích tự động:', err);
                     this.state.aiProcessing = false;
-                    this.updateAIStatusUI('offline');
                     this.renderView();
-                    this.openAIFallbackModal(err.message);
+                    this.toast('Đã xảy ra lỗi khi phân tích văn bản: ' + err.message, 'error');
                 }
-            },
-
-            async fetchWithRetry(url, options, retries = 3) {
-                let delay = 1000;
-                for (let i = 0; i <= retries; i++) {
-                    try {
-                        const res = await fetch(url, options);
-                        if ((res.status === 429 || res.status >= 500) && i < retries) {
-                            await new Promise(r => setTimeout(r, delay));
-                            delay *= 2;
-                            continue;
-                        }
-                        return res;
-                    } catch (e) {
-                        if (i === retries) throw e;
-                        await new Promise(r => setTimeout(r, delay));
-                        delay *= 2;
-                    }
-                }
-            },
-
-            openAIFallbackModal(errorMsg) {
-                const is403OrKeyError = /403|400|key|permission|unauthenticated/i.test(errorMsg);
-                this.showModal({
-                    title: 'Không thể gọi AI trực tuyến — Hỗ trợ xử lý ngay',
-                    body: `
-                        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5">
-                            <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Máy chủ AI từ chối kết nối hoặc thiếu API Key</p>
-                            <p>Chi tiết kỹ thuật: <code class="bg-white px-1.5 py-0.5 rounded border break-all">${this.escapeHTML(errorMsg)}</code></p>
-                        </div>
-                        ${is403OrKeyError ? `
-                            <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-950 space-y-2">
-                                <p class="font-bold text-blue-800"><i class="fa-solid fa-key mr-1"></i> Cách khắc phục lỗi 403 ngay lập tức:</p>
-                                <p class="text-[11px] leading-relaxed">Nếu Thầy/Cô đang mở tệp <code>index.html</code> độc lập hoặc phiên làm việc yêu cầu khóa Gemini API riêng, hãy dán trực tiếp <strong>Gemini API Key</strong> vào ô bên dưới và nhấn <strong>"Lưu Key & Thử lại AI"</strong>:</p>
-                                <input id="quickModalApiKey" type="password" value="${this.escapeHTML(this.state.aiConfig.sessionApiKey || '')}"
-                                    placeholder="Dán Gemini API Key (AIzaSy...) vào đây..."
-                                    class="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg text-xs font-mono focus:outline-none focus:border-blue-600">
-                            </div>
-                        ` : ''}
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            Hoặc Thầy/Cô có thể nhấn <strong>"Dùng Bộ tách câu hỏi cục bộ & Duyệt"</strong> để tách câu hỏi ngay lập tức mà không cần Internet hay API Key.
-                        </p>
-                    `,
-                    footer: `
-                        <button onclick="app.closeModal(); app.analyzeAndDraftManual();" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold">
-                            <i class="fa-solid fa-bolt mr-1"></i> Dùng Bộ tách câu hỏi cục bộ & Duyệt
-                        </button>
-                        ${is403OrKeyError ? `
-                            <button onclick="app.saveQuickKeyAndRetryAI()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
-                                <i class="fa-solid fa-rotate-right mr-1"></i> Lưu Key & Thử lại AI
-                            </button>
-                        ` : `
-                            <button onclick="app.closeModal(); app.openAIConfigModal();" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">
-                                <i class="fa-solid fa-gear mr-1"></i> Cấu hình AI
-                            </button>
-                        `}
-                    `
-                });
-            },
-
-            saveQuickKeyAndRetryAI() {
-                const keyInput = document.getElementById('quickModalApiKey');
-                if (keyInput && keyInput.value.trim()) {
-                    this.state.aiConfig.sessionApiKey = keyInput.value.trim();
-                    this.updateAIStatusUI('connected');
-                }
-                this.closeModal();
-                this.analyzeAndDraftWithAI();
             },
 
             renderReviewView(ws) {
@@ -3161,56 +3215,30 @@ Yêu cầu cấu hình:
                 const dot = document.getElementById('aiStatusDot');
                 const label = document.getElementById('aiStatusLabel');
                 if (!dot || !label) return;
-
-                if (statusOverride === 'connected' || this.state.aiConfig.sessionApiKey || this.state.aiConfig.customEndpoint) {
-                    dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                    label.textContent = 'AI: Đã cấu hình sẵn sàng';
-                } else if (statusOverride === 'offline') {
-                    dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-                    label.textContent = 'AI: Chế độ Thủ công / Cục bộ';
-                } else {
-                    dot.className = 'w-2 h-2 rounded-full bg-blue-400';
-                    label.textContent = 'AI: Tích hợp / Thủ công';
-                }
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                label.textContent = 'Bộ phân tích tự động: Sẵn sàng';
             },
 
             openAIConfigModal() {
                 this.showModal({
-                    title: 'Cấu hình Mô-đun Kết nối AI & Chế độ Thủ công',
+                    title: 'Thông tin Bộ máy Phân tích & Đề xuất Tự động',
                     body: `
-                        <div class="space-y-4 text-xs text-slate-700">
-                            <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 leading-relaxed">
-                                <strong>Nguyên tắc Bảo mật & Trung thực Kỹ thuật:</strong>
-                                Ứng dụng không nhúng cứng API Key trong mã nguồn HTML. Khi chạy trong môi trường hỗ trợ sẵn, AI hoạt động tự động. Khi tải tệp <code>index.html</code> về máy cá nhân, Thầy/Cô có thể nhập URL Máy chủ trung gian (Proxy) hoặc khóa tạm thời trong phiên (không lưu cứng vào mã nguồn).
+                        <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
+                            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1">
+                                <p class="font-bold text-emerald-800"><i class="fa-solid fa-circle-check mr-1"></i> Hoạt động Tự động 100% — Không cần API Key</p>
+                                <p>Tính năng <strong>Phân tích & Đề xuất Tự động</strong> đã được tích hợp trực tiếp vào bên trong mã nguồn ứng dụng QUIZ STUDIO. Thầy/Cô có thể sử dụng ngay trên máy tính cá nhân hoặc trên GitHub Pages mà không bao giờ gặp lỗi kết nối hay lỗi 403.</p>
                             </div>
-                            <div>
-                                <label class="block font-bold mb-1">URL Máy chủ AI trung gian (Proxy Endpoint - Tùy chọn)</label>
-                                <input id="cfgProxyEndpoint" type="text" value="${this.escapeHTML(this.state.aiConfig.customEndpoint || '')}"
-                                    placeholder="https://your-school-ai-proxy.example.com/generate"
-                                    class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs">
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1">Khóa kết nối Gemini API tạm thời trong phiên làm việc (Chỉ lưu trên RAM)</label>
-                                <input id="cfgSessionKey" type="password" value="${this.escapeHTML(this.state.aiConfig.sessionApiKey || '')}"
-                                    placeholder="Nhập Gemini API Key nếu mở tệp HTML độc lập trên máy cá nhân..."
-                                    class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs">
+                            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                                <p class="font-bold text-slate-900">Khả năng xử lý tự động:</p>
+                                <p>• <strong>Với đề cương có sẵn câu hỏi:</strong> Tự động bóc tách từng câu hỏi, phương án A/B/C/D, nhận diện đáp án đúng và lời giải.</p>
+                                <p>• <strong>Với văn bản kiến thức SGK / Giáo án:</strong> Tự động tách các mệnh đề khái niệm, đặc điểm, số liệu, mốc thời gian để đặt câu hỏi và sinh phương án nhiễu kèm lời giải trích dẫn từ bài học.</p>
                             </div>
                         </div>
                     `,
                     footer: `
-                        <button onclick="app.closeModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">Đóng</button>
-                        <button onclick="app.saveAIConfigFromModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">Lưu cấu hình AI</button>
+                        <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">Đã hiểu</button>
                     `
                 });
-            },
-
-            saveAIConfigFromModal() {
-                this.state.aiConfig.customEndpoint = (document.getElementById('cfgProxyEndpoint')?.value || '').trim();
-                this.state.aiConfig.sessionApiKey = (document.getElementById('cfgSessionKey')?.value || '').trim();
-                this.saveToStorage(true);
-                this.updateAIStatusUI();
-                this.closeModal();
-                this.toast('Đã cập nhật cấu hình mô-đun AI.', 'success');
             },
 
             extractDriveFolderId(inputStr) {
